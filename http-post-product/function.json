@@ -6,10 +6,9 @@
       "direction": "in",
       "name": "req",
       "methods": [
-        "get",
         "post"
       ],
-      "route": "product"
+      "route": "products"
     },
     {
       "type": "http",
@@ -17,5 +16,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/http-get-products/index.js"
+  "scriptFile": "../dist/http-post-product/index.js"
 }

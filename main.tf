@@ -105,3 +105,71 @@ resource "azurerm_windows_function_app" "products_service" {
     ]
   }
 }
+
+
+resource "azurerm_resource_group" "product_stock_db_nosql_terraform" {
+  location = "northeurope"
+  name     = "rg-product-service-sand-ne-0020"
+}
+
+
+resource "azurerm_cosmosdb_account" "test_app_0011" {
+  location            = "northeurope"
+  name                = "cos-app-sand-ne-011"
+  offer_type          = "Standard"
+  resource_group_name = azurerm_resource_group.product_stock_db_nosql_terraform.name
+  kind                = "GlobalDocumentDB"
+
+  consistency_policy {
+    consistency_level = "Eventual"
+  }
+
+  capabilities {
+    name = "EnableServerless"
+  }
+
+  geo_location {
+    failover_priority = 0
+    location          = "North Europe"
+  }
+}
+
+resource "azurerm_cosmosdb_sql_database" "products_app" {
+  account_name        = azurerm_cosmosdb_account.test_app_0011.name
+  name                = "products-db"
+  resource_group_name = azurerm_resource_group.product_stock_db_nosql_terraform.name
+}
+
+resource "azurerm_cosmosdb_sql_container" "products" {
+  account_name        = azurerm_cosmosdb_account.test_app_0011.name
+  database_name       = azurerm_cosmosdb_sql_database.products_app.name
+  name                = "products"
+  partition_key_path  = "/id"
+  resource_group_name = azurerm_resource_group.product_stock_db_nosql_terraform.name
+
+  # Cosmos DB supports TTL for the records
+  default_ttl = -1
+
+  indexing_policy {
+    excluded_path {
+      path = "/*"
+    }
+  }
+}
+
+resource "azurerm_cosmosdb_sql_container" "stocks" {
+  account_name        = azurerm_cosmosdb_account.test_app_0011.name
+  database_name       = azurerm_cosmosdb_sql_database.products_app.name
+  name                = "stocks"
+  partition_key_path  = "/product_id"
+  resource_group_name = azurerm_resource_group.product_stock_db_nosql_terraform.name
+
+  # Cosmos DB supports TTL for the records
+  default_ttl = -1
+
+  indexing_policy {
+    excluded_path {
+      path = "/*"
+    }
+  }
+}
