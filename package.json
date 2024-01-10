@@ -8,7 +8,8 @@
     "prestart": "npm run build",
     "start": "func start",
     "test": "echo \"No tests yet...\"",
-    "deploy-fake-data": "node helper/fake-data.mjs"
+    "deploy-fake-data": "node helper/fake-data.mjs",
+    "publish-azure-functionapp": "func azure functionapp publish fa-products-service-ne-001"
   },
   "devDependencies": {
     "@azure/functions": "^3.0.0",
