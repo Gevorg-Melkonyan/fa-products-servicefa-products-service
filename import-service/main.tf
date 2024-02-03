@@ -180,3 +180,32 @@ resource "azurerm_storage_blob" "sa_blob" {
 #   sensitive = false
 #   value = data.azurerm_storage_account_sas.sa.sas
 # }
+
+
+# Create Service Bus Namespace
+resource "azurerm_servicebus_namespace" "sb" {
+  name                          = "my-new-servicebus-555"
+  location                      = azurerm_resource_group.import_service_rg.location
+  resource_group_name           = azurerm_resource_group.import_service_rg.name
+  sku                           = "Basic"
+  capacity                      = 0 /* standard for sku plan */
+  # public_network_access_enabled = true /* can be changed to false for premium */
+  # minimum_tls_version           = "1.2"
+  zone_redundant                = false /* can be changed to true for premium */
+}
+
+# Create Service Bus Queue
+resource "azurerm_servicebus_queue" "example" {
+  name                                    = "my_new_servicebus_queue-555"
+  namespace_id                            = azurerm_servicebus_namespace.sb.id
+  status                                  = "Active" /* Default value */
+  enable_partitioning                     = true /* Default value */
+  lock_duration                           = "PT1M" /* ISO 8601 timespan duration, 5 min is max */
+  # max_message_size_in_kilobytes           = 256 /* default for Basic tier */
+  max_size_in_megabytes                   = 1024 /* Default value */
+  max_delivery_count                      = 10 /* Default value */
+  requires_duplicate_detection            = false
+  duplicate_detection_history_time_window = "PT10M" /* ISO 8601 timespan duration, 5 min is max */
+  requires_session                        = false
+  dead_lettering_on_message_expiration    = false
+}

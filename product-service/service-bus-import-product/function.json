@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "mySbMsg",
+      "type": "serviceBusTrigger",
+      "direction": "in",
+      "queueName": "my_new_servicebus_queue-017",
+      "connection": "AzureServiceBusQueuesConnection"
+    }
+  ],
+  "scriptFile": "../dist/service-bus-import-product/index.js"
+}
